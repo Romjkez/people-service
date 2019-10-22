@@ -10,13 +10,13 @@ export class Person {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   firstName: string;
 
   @Column({ type: 'varchar', length: 255, default: null })
   middleName: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   lastName: string;
 
   @Column({ type: 'date', default: null })
