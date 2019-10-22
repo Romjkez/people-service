@@ -1,10 +1,14 @@
-import { Controller, Get, HttpCode } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { Person } from './entity/person.entity';
+import { PersonService } from './person.service';
 
 @Controller()
 export class PersonController {
-  @Get()
-  @HttpCode(200)
-  defaultAnswer() {
-    return { status: 'ok' };
+  constructor(private readonly personService: PersonService) {
+  }
+
+  @Get('person')
+  async getPerson(): Promise<Person[]> {
+    return this.personService.getAll();
   }
 }
