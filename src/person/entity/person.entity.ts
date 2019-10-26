@@ -24,4 +24,10 @@ export class Person {
 
   @Column({ type: 'enum', enum: ['male', 'female'], nullable: true })
   gender: Gender;
+
+  @Column({ type: 'timestamp', default: Date.now(), nullable: false })
+  readonly createdAt: number;
+
+  @Column({ type: 'timestamp', default: null, nullable: true })
+  updatedAt: number;
 }
