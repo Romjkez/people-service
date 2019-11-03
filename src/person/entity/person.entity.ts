@@ -13,11 +13,14 @@ export class Person {
   @Column({ type: 'varchar', length: 255, nullable: false })
   firstName: string;
 
-  @Column({ type: 'varchar', length: 255, default: null })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   middleName: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
   lastName: string;
+
+  @Column({ type: 'varchar', length: 150, nullable: false, unique: true })
+  email: string;
 
   @Column({ type: 'date', default: null })
   birthday: Date;
@@ -27,6 +30,9 @@ export class Person {
 
   @Column({ type: 'timestamp', default: Date.now(), nullable: false })
   readonly createdAt: number;
+
+  @Column({ type: 'varchar', default: null, nullable: true })
+  updatedBy: string;
 
   @Column({ type: 'timestamp', default: null, nullable: true })
   updatedAt: number;

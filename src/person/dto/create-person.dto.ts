@@ -6,28 +6,38 @@ export class CreatePersonDto {
   @IsNotEmpty()
   @IsString()
   @ApiModelProperty({
-    description: 'Name of a new user',
+    description: 'Name of a new person',
     maxLength: 255,
+    nullable: false,
   })
   readonly firstName: string;
 
+  @IsNotEmpty()
   @IsString()
-  @IsOptional()
   @ApiModelProperty({
-    description: 'Patronymic/middle name of a new user',
+    description: 'Patronymic/middle name of a new person',
     maxLength: 255,
-    nullable: true,
+    nullable: false,
   })
   readonly middleName: string;
 
   @IsNotEmpty()
   @IsString()
   @ApiModelProperty({
-    description: 'Surname(last name) of a new user',
+    description: 'Surname(last name) of a new person',
     maxLength: 255,
     nullable: false,
   })
   readonly lastName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiModelProperty({
+    description: 'Email of a new person',
+    maxLength: 150,
+    nullable: false,
+  })
+  email: string;
 
   @IsDate()
   @IsOptional()
