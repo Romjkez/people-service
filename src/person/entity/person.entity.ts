@@ -36,7 +36,7 @@ export class Person {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: false })
   readonly createdAt: number;
 
-  @Column({ type: 'varchar', default: null, nullable: true })
+  @Column({ type: 'varchar', default: null, nullable: true, length: 100 })
   updatedBy: string;
 
   @Column({ type: 'timestamp', default: null, nullable: true })

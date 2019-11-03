@@ -1,12 +1,12 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { Person } from './entity/person.entity';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { DatabaseException } from '../exceptions/database.exception';
 import { RemovalResultDto } from './dto/removal-result.dto';
 import { Observable } from 'rxjs';
-import { catchError, filter, first, map } from 'rxjs/operators';
-import { DeleteResult } from 'typeorm';
+import { catchError, filter, first, flatMap, map } from 'rxjs/operators';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('person')
 export class PersonController {
@@ -23,19 +23,14 @@ export class PersonController {
     return this.personService.getById(id).pipe(
       first(),
       filter(Boolean),
-      map((person: Person) => {
-        if (!person) {
-          throw new NotFoundException();
-        }
-        return person;
-      }),
+      map((person: Person) => person),
       catchError(err => {
         throw new DatabaseException(err.message);
       }),
     );
   }
 
-  @Post('create')
+  @Post()
   create(@Body() options: CreatePersonDto): Observable<Person> {
     return this.personService.create(options)
       .pipe(
@@ -46,28 +41,34 @@ export class PersonController {
       );
   }
 
-  @Delete(':id')
-  delete(@Param('id') id: number): Observable<RemovalResultDto> {
-    return this.personService.deleteById(id)
+  @Put(':id')
+  update(@Param('id') id: number, @Body() options: UpdateUserDto): Observable<Person> {
+    return this.personService.update(id, options)
       .pipe(
         first(),
-        filter(Boolean),
-        map((res: DeleteResult) => res.raw.affectedRows),
-        map(affectedRows => {
-          if (!affectedRows && affectedRows < 1) {
-            throw new NotFoundException();
-          }
-          return affectedRows;
-        }),
-        map(affectedRows => {
-          return {
-            affectedRows,
-            ok: affectedRows && affectedRows > 0,
-          };
-        }),
+        flatMap(res => this.personService.getById(id).pipe(first())),
         catchError(err => {
           throw new DatabaseException(err.message);
         }),
       );
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: number): Observable<RemovalResultDto> {
+    return this.personService.getById(id).pipe(
+      first(),
+      flatMap(() => this.personService.deleteById(id)),
+      first(),
+      map(res => res.raw.affectedRows),
+      map(affectedRows => {
+        return {
+          affectedRows,
+          ok: affectedRows && affectedRows > 0,
+        };
+      }),
+      catchError(err => {
+        throw new DatabaseException(err.message);
+      }),
+    );
   }
 }
