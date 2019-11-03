@@ -1,14 +1,16 @@
 import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
-import { Gender } from '../entity/person.entity';
+import { Gender, MAX_EMAIL_LENGTH, MAX_FIRST_NAME_LENGTH, MAX_LAST_NAME_LENGTH, MAX_MIDDLE_NAME_LENGTH } from '../entity/person.entity';
 
 export class CreatePersonDto {
   @IsNotEmpty()
   @IsString()
   @ApiModelProperty({
     description: 'Name of a new person',
-    maxLength: 255,
+    maxLength: MAX_FIRST_NAME_LENGTH,
     nullable: false,
+    example: 'Vladimir',
+    required: true,
   })
   readonly firstName: string;
 
@@ -16,8 +18,10 @@ export class CreatePersonDto {
   @IsString()
   @ApiModelProperty({
     description: 'Patronymic/middle name of a new person',
-    maxLength: 255,
+    maxLength: MAX_MIDDLE_NAME_LENGTH,
     nullable: false,
+    example: 'Vladimirovich',
+    required: true,
   })
   readonly middleName: string;
 
@@ -25,8 +29,10 @@ export class CreatePersonDto {
   @IsString()
   @ApiModelProperty({
     description: 'Surname(last name) of a new person',
-    maxLength: 255,
+    maxLength: MAX_LAST_NAME_LENGTH,
     nullable: false,
+    example: 'Putin',
+    required: true,
   })
   readonly lastName: string;
 
@@ -34,8 +40,10 @@ export class CreatePersonDto {
   @IsString()
   @ApiModelProperty({
     description: 'Email of a new person',
-    maxLength: 150,
+    maxLength: MAX_EMAIL_LENGTH,
     nullable: false,
+    example: 'example@mail.com',
+    required: true,
   })
   email: string;
 
@@ -44,6 +52,8 @@ export class CreatePersonDto {
   @ApiModelProperty({
     description: 'Birthday of a new user',
     nullable: true,
+    example: '1999-06-28',
+    required: false,
   })
   readonly birthday: Date;
 
@@ -52,6 +62,8 @@ export class CreatePersonDto {
   @ApiModelProperty({
     description: 'Gender (sex) of a new user',
     nullable: true,
+    enum: Gender,
+    required: false,
   })
   readonly gender: Gender;
 }

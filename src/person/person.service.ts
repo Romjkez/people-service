@@ -14,11 +14,15 @@ export class PersonService {
     return this.personRepository.find();
   }
 
-  async createPerson(options: CreatePersonDto): Promise<Person> {
-    return this.personRepository.create(options);
+  async create(options: CreatePersonDto): Promise<Person> {
+    return this.personRepository.save(options);
   }
 
-  async deletePerson(id: number): Promise<DeleteResult> {
+  async getById(id: number): Promise<Person> {
+    return this.personRepository.findOne(id);
+  }
+
+  async delete(id: number): Promise<DeleteResult> {
     return this.personRepository.delete(id);
   }
 }

@@ -5,21 +5,26 @@ export enum Gender {
   female = 'female',
 }
 
+export const MAX_FIRST_NAME_LENGTH: number = 255;
+export const MAX_MIDDLE_NAME_LENGTH: number = 255;
+export const MAX_LAST_NAME_LENGTH: number = 255;
+export const MAX_EMAIL_LENGTH: number = 150;
+
 @Entity()
 export class Person {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'varchar', length: MAX_FIRST_NAME_LENGTH, nullable: false })
   firstName: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'varchar', length: MAX_MIDDLE_NAME_LENGTH, nullable: false })
   middleName: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'varchar', length: MAX_LAST_NAME_LENGTH, nullable: false })
   lastName: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: false, unique: true })
+  @Column({ type: 'varchar', length: MAX_EMAIL_LENGTH, nullable: false, unique: true })
   email: string;
 
   @Column({ type: 'date', default: null })
@@ -28,7 +33,7 @@ export class Person {
   @Column({ type: 'enum', enum: ['male', 'female'], nullable: true })
   gender: Gender;
 
-  @Column({ type: 'timestamp', default: Date.now(), nullable: false })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: false })
   readonly createdAt: number;
 
   @Column({ type: 'varchar', default: null, nullable: true })
