@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Person } from './entity/person.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreatePersonDto } from './dto/create-person.dto';
+import { from, Observable } from 'rxjs';
 
 @Injectable()
 export class PersonService {
@@ -10,19 +11,19 @@ export class PersonService {
     @InjectRepository(Person) private readonly personRepository: Repository<Person>) {
   }
 
-  async getAll(): Promise<Person[]> {
-    return this.personRepository.find();
+  getAll(): Observable<Person[]> {
+    return from(this.personRepository.find());
   }
 
-  async create(options: CreatePersonDto): Promise<Person> {
-    return this.personRepository.save(options);
+  create(options: CreatePersonDto): Observable<Person> {
+    return from(this.personRepository.save(options));
   }
 
-  async getById(id: number): Promise<Person> {
-    return this.personRepository.findOne(id);
+  getById(id: number): Observable<Person> {
+    return from(this.personRepository.findOne(id));
   }
 
-  async delete(id: number): Promise<DeleteResult> {
-    return this.personRepository.delete(id);
+  deleteById(id: number): Observable<DeleteResult> {
+    return from(this.personRepository.delete(id));
   }
 }
