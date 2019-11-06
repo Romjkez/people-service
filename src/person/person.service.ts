@@ -4,7 +4,7 @@ import { Person } from './entity/person.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { from, Observable, of } from 'rxjs';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePersonDto } from './dto/update-person.dto';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
@@ -37,8 +37,14 @@ export class PersonService {
     return from(this.personRepository.delete(id));
   }
 
-  update(id: number, options: UpdateUserDto): Observable<UpdateResult> {
+  update(id: number, options: UpdatePersonDto): Observable<UpdateResult> {
     return from(this.personRepository
       .update(id, Object.assign(options, { updatedAt: new Date() })));
+  }
+
+  search(query: string): Observable<Person[]> {
+    query = query.replace(/[\/\\#,+()$~%'":*?<>{}]/g, '');
+    return from(this.personRepository.query(
+      `SELECT * FROM person WHERE firstName LIKE "%${query}%" OR lastName LIKE "%${query}%" OR middleName LIKE "%${query}%" OR email LIKE "%${query}%"`));
   }
 }

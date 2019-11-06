@@ -1,12 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
 import { Person } from './entity/person.entity';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { DatabaseException } from '../exceptions/database.exception';
 import { RemovalResultDto } from './dto/removal-result.dto';
 import { Observable } from 'rxjs';
-import { catchError, filter, first, flatMap, map } from 'rxjs/operators';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { catchError, first, flatMap, map } from 'rxjs/operators';
+import { UpdatePersonDto } from './dto/update-person.dto';
+import { ApiImplicitQuery } from '@nestjs/swagger';
 
 @Controller('person')
 export class PersonController {
@@ -14,7 +15,25 @@ export class PersonController {
   }
 
   @Get()
-  getAll(): Observable<Person[]> {
+  @ApiImplicitQuery({
+    name: 'query',
+    required: false,
+  })
+  get(@Query('query') query?: string): Observable<Person[]> {
+    if (query && query.trim().length > 2) {
+      return this.personService.search(query)
+        .pipe(
+          first(),
+          map(res => {
+            if (res && res.length === 0) {
+              throw new NotFoundException(`No users found by query: ${query}`);
+            }
+            return res;
+          }),
+        );
+    } else if (query && query.trim().length <= 2) {
+      throw new BadRequestException('Query length must be >2 symbols. Special characters will be removed.');
+    }
     return this.personService.getAll();
   }
 
@@ -22,11 +41,6 @@ export class PersonController {
   getById(@Param('id') id: number): Observable<Person> {
     return this.personService.getById(id).pipe(
       first(),
-      filter(Boolean),
-      map((person: Person) => person),
-      catchError(err => {
-        throw new DatabaseException(err.message);
-      }),
     );
   }
 
@@ -42,7 +56,7 @@ export class PersonController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() options: UpdateUserDto): Observable<Person> {
+  update(@Param('id') id: number, @Body() options: UpdatePersonDto): Observable<Person> {
     return this.personService.update(id, options)
       .pipe(
         first(),

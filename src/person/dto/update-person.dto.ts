@@ -2,7 +2,7 @@ import { Gender } from '../entity/person.entity';
 import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 
-export class UpdateUserDto {
+export class UpdatePersonDto {
   @IsEnum(['male', 'female'])
   @IsOptional()
   @ApiModelProperty({
