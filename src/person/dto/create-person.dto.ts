@@ -58,6 +58,7 @@ export class CreatePersonDto {
     nullable: true,
     example: '1999-06-28',
     required: false,
+    type: 'string',
   })
   readonly birthday?: Date;
 

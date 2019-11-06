@@ -20,6 +20,8 @@ export class UpdateUserDto {
     nullable: true,
     example: '1999-05-20',
     required: false,
+    type: 'string',
+    pattern: 'yyyy\\mm\\dd',
   })
   readonly birthday?: Date;
 
