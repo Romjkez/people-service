@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { Person } from './entity/person.entity';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { catchError, first, flatMap, map } from 'rxjs/operators';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { ApiImplicitQuery } from '@nestjs/swagger';
+import { SearchParams } from '../exceptions/search.params';
 
 @Controller('person')
 export class PersonController {
@@ -15,24 +16,32 @@ export class PersonController {
   }
 
   @Get()
-  @ApiImplicitQuery({
-    name: 'query',
-    required: false,
-  })
-  get(@Query('query') query?: string): Observable<Person[]> {
-    if (query && query.trim().length > 2) {
-      return this.personService.search(query)
-        .pipe(
-          first(),
-          map(res => {
-            if (res && res.length === 0) {
-              throw new NotFoundException(`No users found by query: ${query}`);
-            }
-            return res;
-          }),
-        );
-    } else if (query && query.trim().length <= 2) {
-      throw new BadRequestException('Query length must be >2 symbols. Special characters will be removed.');
+  @ApiImplicitQuery({ name: 'query', required: false, description: 'Part of or full firstName/middleName/lastName/email separately' })
+  @ApiImplicitQuery({ name: 'firstName', required: false })
+  @ApiImplicitQuery({ name: 'middleName', required: false })
+  @ApiImplicitQuery({ name: 'lastName', required: false })
+  @ApiImplicitQuery({ name: 'email', required: false })
+  get(@Query('query') query?: string,
+      @Query('firstName') firstName?: string,
+      @Query('middleName') middleName?: string,
+      @Query('lastName') lastName?: string,
+      @Query('email') email?: string,
+  ): Observable<Person[]> {
+    if (query) {
+      query = query.trim().replace(/[\/\\#,+()$~%'":*?<>{}]/g, '');
+      if (query.length > 2) {
+        return this.personService.searchByAnyField(query);
+      } else {
+        throw new BadRequestException('Query length must be >2 symbols. Special characters will be removed.');
+      }
+    } else if (firstName || middleName || lastName || email) {
+      const searchParams: SearchParams = {
+        firstName: firstName || null,
+        lastName: lastName || null,
+        middleName: middleName || null,
+        email: email || null,
+      };
+      return this.personService.search(searchParams);
     }
     return this.personService.getAll();
   }
