@@ -6,7 +6,7 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { from, Observable, of } from 'rxjs';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { catchError, first, map } from 'rxjs/operators';
-import { NotFoundFieldsException, SearchParams, SearchParamsWithError } from '../exceptions/search.params';
+import { SearchParams } from '../exceptions/search.params';
 import { prepareSearchParams, removeEmptyFields } from '../utils/utils';
 
 @Injectable()
@@ -60,17 +60,6 @@ export class PersonService {
 
   search(params: SearchParams): Observable<Person[]> {
     const rawParams: Partial<SearchParams> = prepareSearchParams(removeEmptyFields(params));
-    return from(this.personRepository
-      .find(rawParams))
-      .pipe(
-        first(),
-        map((res: Person[]) => {
-          if (res && res.length === 0) {
-            const paramsWithError: SearchParamsWithError = { message: 'No persons found for given data', data: params };
-            throw new NotFoundFieldsException(paramsWithError);
-          }
-          return res;
-        }),
-      );
+    return from(this.personRepository.find(rawParams));
   }
 }

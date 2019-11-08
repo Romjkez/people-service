@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { Person } from './entity/person.entity';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { catchError, first, flatMap, map } from 'rxjs/operators';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { ApiImplicitQuery } from '@nestjs/swagger';
-import { SearchParams } from '../exceptions/search.params';
+import { NotFoundFieldsException, SearchParams, SearchParamsWithError } from '../exceptions/search.params';
 import { CreatePersonPipe } from '../pipes/create-person.pipe';
 import { CreatePersonDtoValidationPipe } from '../pipes/create-person-dto-validation.pipe';
 
@@ -43,7 +43,17 @@ export class PersonController {
         middleName: middleName || null,
         email: email || null,
       };
-      return this.personService.search(searchParams);
+      return this.personService.search(searchParams)
+        .pipe(
+          first(),
+          map((res: Person[]) => {
+            if (res && res.length === 0) {
+              const paramsWithError: SearchParamsWithError = { message: 'No persons found for given data', data: searchParams };
+              throw new NotFoundFieldsException(paramsWithError);
+            }
+            return res;
+          }),
+        );
     }
     return this.personService.getAll();
   }
@@ -58,8 +68,15 @@ export class PersonController {
   @Post()
   @UsePipes(CreatePersonPipe, CreatePersonDtoValidationPipe)
   create(@Body() options: CreatePersonDto): Observable<Person> {
-    return this.personService.create(options)
+    return this.personService.search(options)
       .pipe(
+        map(res => {
+          if (res && res.length !== 0) {
+            throw new ConflictException('User with such firstName, middleName, lastName and email already exists');
+          }
+          return res;
+        }),
+        flatMap(() => this.personService.create(options)),
         catchError(err => {
           throw new DatabaseException(err.message);
         }),

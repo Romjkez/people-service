@@ -1,75 +1,81 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Сервис "Люди"
+## Получение списка людей
+- Метод: GET
+- Путь: /person
+- Тело запроса (JSON): пустое
+- URL параметры: 
+    - `query`* - поиск по любой части имени, фамилии, отчества или email
+    
+    ИЛИ**
+    - `firstName` - поиск по имени
+    - `lastName` - поиск по фамилии
+    - `middleName` - поиск по отчеству
+    - `email` - поиск по email
+    
+\* `query` - приоритетный параметр, если он указан, то `firstName`, `lastName`, `middleName`, `email` будут проигнорированы
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+\** - поиск по полям `firstName`/`lastName`/`middleName`/`email` можно комбинировать; 
 
-## Description
+- Формат ответа: JSON массив с людьми ИЛИ [ошибка](#Ошибка)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Если не указан ни один URL параметр, то будут возвращены все люди из базы данных.
 
-## Installation
+## Получение человека по ID
+- Метод: GET
+- Путь: /person/{id}
+- Тело запроса (JSON): пустое
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект (человек) ИЛИ [ошибка](#Ошибка)
 
-```bash
-$ npm install
+## Добавление человека
+- Метод: POST
+- Путь: /person
+- Тело запроса (JSON): 
+    - `fistName`* - имя
+    - `middleName`* - отчество
+    - `lastName`* - фамилия
+    - `email`* - эл. почта
+    - `gender` - пол (доступные значения: *male* или *female*)
+    - `birthday` - дата рождения (должна соответствовать формату: ГГГГ-ММ-ДД)
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект (человек) ИЛИ [ошибка](#Ошибка)
+
+\* - обязательные поля
+
+## Редактирование человека
+- Метод: PUT
+- Путь: /person/{id}
+- Тело запроса (JSON): 
+    - `gender` - пол (доступные значения: *male* или *female*)
+    - `birthday` - дата рождения (должна соответствовать формату: ГГГГ-ММ-ДД)
+    - *`updatedBy` - наименование сервиса, вносящего изменения
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект (человек) ИЛИ [ошибка](#Ошибка)
+
+\* - обязательные поля
+
+## Удаление человека
+- Метод: DELETE
+- Путь: /person/{id}
+- Тело запроса (JSON): пустое
+- URL параметры: отсутствуют
+- Формат ответа: JSON объект с полями:
+    - `affectedRows` - кол-во затронутых (удалённых) записей в базе данных
+    - `ok` - успешно ли удаление (*true* или *false*)
+   
+  ИЛИ [ошибка](#Ошибка)
+
+## Ошибки
+Представляют из себя объект с полями:
+- `statusCode` - HTTP код ошибки
+- `error` - соответствующий HTTP коду текст ошибки
+- `message` - текст ошибки, отправленный сервисом
+
+Например:
+```json
+{
+  "statusCode": 404,
+  "error": "Not Found",
+  "message": "Could not find any entity of type \"Person\" matching: \"31123\""
+}
 ```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-  Nest is [MIT licensed](LICENSE).
