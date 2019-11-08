@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 export enum Gender {
   male = 'male',
@@ -11,6 +11,7 @@ export const MAX_LAST_NAME_LENGTH: number = 255;
 export const MAX_EMAIL_LENGTH: number = 150;
 
 @Entity()
+@Unique(['firstName', 'middleName', 'lastName', 'email'])
 export class Person {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
@@ -24,7 +25,7 @@ export class Person {
   @Column({ type: 'varchar', length: MAX_LAST_NAME_LENGTH, nullable: false })
   lastName: string;
 
-  @Column({ type: 'varchar', length: MAX_EMAIL_LENGTH, nullable: false, unique: true })
+  @Column({ type: 'varchar', length: MAX_EMAIL_LENGTH, nullable: false })
   email: string;
 
   @Column({ type: 'date', default: null })

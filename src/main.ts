@@ -8,7 +8,7 @@ async function bootstrap() {
   const options = new DocumentBuilder()
     .setTitle('Сервис "Люди" | Проектирование веб-вервисов | Мешков Р.А [171-331]')
     .setDescription('Документация к сервису "Люди"')
-    .setVersion('1.0')
+    .setVersion('1.1')
     .addTag('people')
     .build();
   const document = SwaggerModule.createDocument(app, options);

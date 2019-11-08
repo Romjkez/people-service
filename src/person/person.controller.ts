@@ -10,6 +10,7 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 import { ApiImplicitQuery } from '@nestjs/swagger';
 import { SearchParams } from '../exceptions/search.params';
 import { CreatePersonPipe } from '../pipes/create-person.pipe';
+import { CreatePersonDtoValidationPipe } from '../pipes/create-person-dto-validation.pipe';
 
 @Controller('person')
 export class PersonController {
@@ -55,7 +56,7 @@ export class PersonController {
   }
 
   @Post()
-  @UsePipes(CreatePersonPipe)
+  @UsePipes(CreatePersonPipe, CreatePersonDtoValidationPipe)
   create(@Body() options: CreatePersonDto): Observable<Person> {
     return this.personService.create(options)
       .pipe(
