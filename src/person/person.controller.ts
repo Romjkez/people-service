@@ -1,15 +1,15 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { Person } from './entity/person.entity';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { DatabaseException } from '../exceptions/database.exception';
 import { RemovalResultDto } from './dto/removal-result.dto';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, first, flatMap, map } from 'rxjs/operators';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { ApiImplicitQuery } from '@nestjs/swagger';
 import { SearchParams } from '../exceptions/search.params';
-import { toCanonical } from '../utils/utils';
+import { CreatePersonPipe } from '../pipes/create-person.pipe';
 
 @Controller('person')
 export class PersonController {
@@ -55,19 +55,10 @@ export class PersonController {
   }
 
   @Post()
+  @UsePipes(CreatePersonPipe)
   create(@Body() options: CreatePersonDto): Observable<Person> {
-    return of(options)
+    return this.personService.create(options)
       .pipe(
-        map(opts => {
-          const transformedOpts: CreatePersonDto = Object.assign(opts, {
-            firstName: toCanonical(opts.firstName),
-            lastName: toCanonical(opts.lastName),
-            middleName: toCanonical(opts.middleName),
-            email: opts.email.toLowerCase(),
-          });
-          return transformedOpts;
-        }),
-        flatMap(opts => this.personService.create(opts)),
         catchError(err => {
           throw new DatabaseException(err.message);
         }),
