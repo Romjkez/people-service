@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { Gender, MAX_EMAIL_LENGTH, MAX_FIRST_NAME_LENGTH, MAX_LAST_NAME_LENGTH, MAX_MIDDLE_NAME_LENGTH } from '../entity/person.entity';
 
@@ -57,6 +57,7 @@ export class CreatePersonDto {
   @ApiModelProperty({
     description: 'Birthday of a new person',
     nullable: true,
+    maxLength: 10,
     pattern: 'yyyy-mm-dd',
     example: '1999-06-28',
     required: false,
@@ -71,6 +72,18 @@ export class CreatePersonDto {
     nullable: true,
     enum: Gender,
     required: false,
+    example: 'male',
   })
   readonly gender?: Gender;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiModelProperty({
+    description: 'Phone number of a new person (only digits without spaces and special characters)',
+    nullable: true,
+    example: 88005553535,
+    type: 'number',
+    required: false,
+  })
+  readonly phone?: number;
 }

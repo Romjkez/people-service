@@ -1,5 +1,5 @@
 import { Gender } from '../entity/person.entity';
-import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 export class UpdatePersonDto {
@@ -24,6 +24,17 @@ export class UpdatePersonDto {
     pattern: 'yyyy\\mm\\dd',
   })
   readonly birthday?: Date;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiModelProperty({
+    description: 'Phone number of a person',
+    nullable: true,
+    example: 88005553535,
+    required: false,
+    type: 'number',
+  })
+  readonly phone?: number;
 
   @IsNotEmpty()
   @IsString()

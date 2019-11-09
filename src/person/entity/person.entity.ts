@@ -9,6 +9,7 @@ export const MAX_FIRST_NAME_LENGTH: number = 255;
 export const MAX_MIDDLE_NAME_LENGTH: number = 255;
 export const MAX_LAST_NAME_LENGTH: number = 255;
 export const MAX_EMAIL_LENGTH: number = 150;
+export const MAX_PHONE_LENGTH: number = 20;
 
 @Entity()
 @Unique(['firstName', 'middleName', 'lastName', 'email'])
@@ -27,6 +28,9 @@ export class Person {
 
   @Column({ type: 'varchar', length: MAX_EMAIL_LENGTH, nullable: false })
   email: string;
+
+  @Column({ type: 'bigint', nullable: true })
+  phone: number;
 
   @Column({ type: 'date', default: null })
   birthday: Date;
