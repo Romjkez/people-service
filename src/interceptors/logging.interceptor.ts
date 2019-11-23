@@ -1,7 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { AddLogDto } from '../logger/dto/add-log.dto';
+import { Observable, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { LogService } from '../logger/log.service';
 
 @Injectable()
@@ -10,12 +9,12 @@ export class LoggingInterceptor implements NestInterceptor {
   }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const res: Response = context.switchToHttp().getResponse();
+    const req: Request = context.switchToHttp().getRequest();
     return next.handle()
       .pipe(
         tap(r => {
-          const res: Response = context.switchToHttp().getResponse();
-          const req: Request = context.switchToHttp().getRequest();
-          const log: AddLogDto = {
+          return this.logService.add({
             status: (res as any).statusCode,
             reqHeaders: req.headers,
             reqBody: req.body,
@@ -24,10 +23,22 @@ export class LoggingInterceptor implements NestInterceptor {
             path: req.url,
             date: new Date(),
             method: req.method,
-          };
-          console.log(log);
+          });
         }),
-      );
+        catchError(err => {
+            this.logService.add({
+              status: err.message.statusCode,
+              reqHeaders: req.headers,
+              reqBody: req.body,
+              resHeaders: (res as any).getHeaders(),
+              resBody: err.message,
+              path: req.url,
+              date: new Date(),
+              method: req.method,
+            });
+            return of(err.message);
+          },
+        ));
   }
 
 }

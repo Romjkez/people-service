@@ -10,6 +10,7 @@ async function bootstrap() {
     .setDescription('Документация к сервису "Люди"')
     .setVersion('1.1')
     .addTag('people')
+    .addTag('logs')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);

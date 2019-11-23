@@ -20,12 +20,13 @@ import { RemovalResultDto } from './dto/removal-result.dto';
 import { Observable } from 'rxjs';
 import { catchError, first, flatMap, map } from 'rxjs/operators';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { ApiImplicitQuery } from '@nestjs/swagger';
+import { ApiImplicitQuery, ApiUseTags } from '@nestjs/swagger';
 import { NotFoundFieldsException, SearchParams, SearchParamsWithError } from '../exceptions/search.params';
 import { CreatePersonPipe } from '../pipes/create-person.pipe';
 import { CreatePersonDtoValidationPipe } from '../pipes/create-person-dto-validation.pipe';
 import { LoggingInterceptor } from '../interceptors/logging.interceptor';
 
+@ApiUseTags('people')
 @UseInterceptors(LoggingInterceptor)
 @Controller('person')
 export class PersonController {
