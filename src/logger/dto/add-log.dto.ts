@@ -1,4 +1,3 @@
-import { HttpStatus } from '@nestjs/common';
 import { IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
 
 export class AddLogDto {
@@ -19,11 +18,11 @@ export class AddLogDto {
   readonly resBody: object;
 
   @IsNumber()
-  readonly status: HttpStatus;
+  readonly status: string;
 
   @IsNumber()
-  readonly date: number;
-
-  @IsString()
-  readonly source: string;
+  readonly date: Date;
+  /*
+    @IsString()
+    readonly source: string;*/
 }

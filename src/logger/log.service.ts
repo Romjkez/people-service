@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LogEntity } from './log.entity';
+import { Log } from './log.entity';
 import { Repository } from 'typeorm';
 import { AddLogDto } from './dto/add-log.dto';
-import { from, Observable } from 'rxjs';
 
 export enum SortType {
   'ASC' = 'ASC',
@@ -12,18 +11,18 @@ export enum SortType {
 
 @Injectable()
 export class LogService {
-  constructor(@InjectRepository(LogEntity) private readonly logRepo: Repository<LogEntity>) {
+  constructor(@InjectRepository(Log) private readonly logRepo: Repository<Log>) {
   }
 
-  add(logDTO: AddLogDto): Observable<LogEntity> {
-    return from(this.logRepo.save(logDTO));
+  async add(logDTO: AddLogDto): Promise<Log> {
+    return this.logRepo.save(logDTO);
   }
 
-  getAll(limit?: number, offset?: number, sort?: SortType): Observable<LogEntity[]> {
-    return from(this.logRepo.find({
+  async getAll(limit?: number, offset?: number, sort?: SortType): Promise<Log[]> {
+    return this.logRepo.find({
       order: { date: (sort || 'DESC') },
       skip: (offset && offset >= 0 ? offset : 0),
       take: (limit && limit >= 0 ? limit : 0),
-    }));
+    });
   }
 }

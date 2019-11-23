@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { HttpStatus } from '@nestjs/common';
 
 enum HTTPMethod {
   GET = 'GET',
@@ -10,9 +9,12 @@ enum HTTPMethod {
 }
 
 @Entity()
-export class LogEntity {
+export class Log {
   @PrimaryGeneratedColumn({ type: 'bigint', unsigned: true })
   id: number;
+
+  @Column({ type: 'varchar', nullable: false, default: 'unknown path' })
+  path: string;
 
   @Column({ type: 'enum', nullable: false, enum: HTTPMethod })
   method: string;
@@ -29,12 +31,12 @@ export class LogEntity {
   @Column({ type: 'json', nullable: true })
   resBody: object;
 
-  @Column({ type: 'int', nullable: false })
-  status: HttpStatus;
+  @Column({ type: 'varchar', nullable: false })
+  status: string;
 
   @Column({ type: 'timestamp', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
-  readonly date: number;
+  readonly date: Date;
 
-  @Column({ type: 'varchar', nullable: false })
-  source: string;
+  /*  @Column({ type: 'varchar', nullable: false })
+    source: string;*/
 }
