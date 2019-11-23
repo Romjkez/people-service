@@ -5,13 +5,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { typeOrmOptions } from '../config/typeorm.config';
 import { LogModule } from './logger/log.module';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmOptions),
-    PersonModule,
     LogModule,
+    PersonModule,
   ],
+  providers: [LoggingInterceptor],
+  exports: [LoggingInterceptor],
   controllers: [AppController],
 })
 export class AppModule {

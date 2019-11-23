@@ -1,4 +1,17 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  ConflictException,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseInterceptors,
+  UsePipes,
+} from '@nestjs/common';
 import { Person } from './entity/person.entity';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -11,7 +24,9 @@ import { ApiImplicitQuery } from '@nestjs/swagger';
 import { NotFoundFieldsException, SearchParams, SearchParamsWithError } from '../exceptions/search.params';
 import { CreatePersonPipe } from '../pipes/create-person.pipe';
 import { CreatePersonDtoValidationPipe } from '../pipes/create-person-dto-validation.pipe';
+import { LoggingInterceptor } from '../interceptors/logging.interceptor';
 
+@UseInterceptors(LoggingInterceptor)
 @Controller('person')
 export class PersonController {
   constructor(private readonly personService: PersonService) {

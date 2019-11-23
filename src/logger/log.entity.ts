@@ -32,7 +32,7 @@ export class Log {
   resBody: object;
 
   @Column({ type: 'varchar', nullable: false })
-  status: string;
+  status: number;
 
   @Column({ type: 'timestamp', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   readonly date: Date;

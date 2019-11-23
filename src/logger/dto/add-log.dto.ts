@@ -18,10 +18,13 @@ export class AddLogDto {
   readonly resBody: object;
 
   @IsNumber()
-  readonly status: string;
+  readonly status: number;
 
   @IsNumber()
   readonly date: Date;
+
+  @IsString()
+  path: string;
   /*
     @IsString()
     readonly source: string;*/
