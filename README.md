@@ -39,7 +39,34 @@
     - `gender` - пол (доступные значения: *male* или *female*)
     - `birthday` - дата рождения (должна соответствовать формату: ГГГГ-ММ-ДД)
 - URL параметры: отсутствуют
-- Формат ответа: JSON объект (человек) ИЛИ [ошибка](#Ошибки)
+- Формат ответа: JSON объект формата `CreateResult` ИЛИ [ошибка](#Ошибки)
+
+Модель ответа `CreateResult`:
+```js
+{
+    data: Person, // сама модель объекта Person
+    wasFound: boolean // если true - человек существует и возвращён из БД; false - создан и сохранён в БД
+}
+```
+Пример: 
+```json
+{
+  "data": {
+    "firstName": "Vladimir",
+    "middleName": "Vladimirovich",
+    "lastName": "Putin",
+    "email": "example0000@mail.com",
+    "birthday": "1999-06-28",
+    "gender": "male",
+    "phone": 88005553535,
+    "updatedBy": null,
+    "updatedAt": null,
+    "id": 39,
+    "createdAt": "2019-12-05T15:42:08.000Z"
+  },
+  "wasFound": false
+}
+```
 
 \* - обязательные поля
 

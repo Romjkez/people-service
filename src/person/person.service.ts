@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Person } from './entity/person.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreatePersonDto } from './dto/create-person.dto';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable, of, zip } from 'rxjs';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { catchError, first, map } from 'rxjs/operators';
+import { catchError, first, flatMap, map } from 'rxjs/operators';
 import { SearchParams } from '../exceptions/search.params';
 import { prepareSearchParams, removeEmptyFields } from '../utils/utils';
+import { CreateResult } from './models/create-result.model';
 
 @Injectable()
 export class PersonService {
@@ -19,8 +20,25 @@ export class PersonService {
     return from(this.personRepository.find());
   }
 
-  create(options: CreatePersonDto): Observable<Person> {
-    return from(this.personRepository.save(options));
+  create(options: CreatePersonDto): Observable<CreateResult> {
+    const searchParams: SearchParams = {
+      firstName: options.firstName,
+      lastName: options.lastName,
+      middleName: options.middleName,
+      email: options.email,
+    };
+    return from(this.search(searchParams))
+      .pipe(
+        flatMap((res: Person) => {
+          if (res) {
+            return zip(of(res), of(true));
+          }
+          return zip(from(this.personRepository.save(options)), of(false));
+        }),
+        map(([person, wasFound]) => {
+          return { data: person, wasFound };
+        }),
+      );
   }
 
   getById(id: number): Observable<Person> {
@@ -58,8 +76,8 @@ export class PersonService {
       );
   }
 
-  search(params: SearchParams): Observable<Person[]> {
+  search(params: SearchParams): Observable<Person> {
     const rawParams: Partial<SearchParams> = prepareSearchParams(removeEmptyFields(params));
-    return from(this.personRepository.find(rawParams));
+    return from(this.personRepository.findOne(rawParams));
   }
 }
