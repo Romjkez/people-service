@@ -64,11 +64,8 @@ export class PersonController {
   }
 
   @Get(':id')
-  @ApiResponse({ status: 200, type: Person })
   getById(@Param('id') id: number): Observable<Person> {
-    return this.personService.getById(id).pipe(
-      first(),
-    );
+    return this.personService.getById(id);
   }
 
   @Post()

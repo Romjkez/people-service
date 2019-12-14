@@ -31,7 +31,7 @@ export class Log {
   @Column({ type: 'json', nullable: true })
   resBody: object;
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', nullable: false, default: 200 })
   status: number;
 
   @Column({ type: 'timestamp', nullable: false, default: () => 'CURRENT_TIMESTAMP' })

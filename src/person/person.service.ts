@@ -5,7 +5,7 @@ import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { from, Observable, of, zip } from 'rxjs';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { catchError, first, flatMap, map } from 'rxjs/operators';
+import { first, flatMap, map } from 'rxjs/operators';
 import { SearchParams } from '../exceptions/search.params';
 import { prepareSearchParams, removeEmptyFields } from '../utils/utils';
 import { CreateResult } from './models/create-result.model';
@@ -42,15 +42,7 @@ export class PersonService {
   }
 
   getById(id: number): Observable<Person> {
-    return from(this.personRepository.findOneOrFail(id))
-      .pipe(
-        catchError(e => {
-          if (e.name === 'EntityNotFound') {
-            throw new NotFoundException(e.message);
-          }
-          return of(e);
-        }),
-      );
+    return from(this.personRepository.findOneOrFail(id));
   }
 
   deleteById(id: number): Observable<DeleteResult> {

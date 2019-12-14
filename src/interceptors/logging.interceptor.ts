@@ -1,5 +1,5 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { Observable, of } from 'rxjs';
+import { BadRequestException, CallHandler, ExecutionContext, Injectable, NestInterceptor, NotFoundException } from '@nestjs/common';
+import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { LogService } from '../logger/log.service';
 
@@ -36,7 +36,10 @@ export class LoggingInterceptor implements NestInterceptor {
               date: new Date(),
               method: req.method,
             });
-            return of(err.message);
+          if (err.name === 'EntityNotFound') {
+            throw new NotFoundException(err.message);
+          }
+          throw new BadRequestException(err.message);
           },
         ));
   }
