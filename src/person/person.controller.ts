@@ -33,7 +33,7 @@ export class PersonController {
       @Query('middleName') middleName?: string,
       @Query('lastName') lastName?: string,
       @Query('email') email?: string,
-  ): Observable<Person[] | Person> {
+  ): Observable<Person[]> {
     if (query) {
       query = query.trim().replace(/[\/\\#,+()$~%'":*?<>{}]/g, '');
       if (query.length > 2) {
@@ -50,9 +50,8 @@ export class PersonController {
       };
       return this.personService.search(searchParams)
         .pipe(
-          first(),
-          map((res: Person) => {
-            if (!res) {
+          map(res => {
+            if (!res || (res && res.length === 0)) {
               const paramsWithError: SearchParamsWithError = { message: 'No persons found for given data', data: searchParams };
               throw new NotFoundFieldsException(paramsWithError);
             }

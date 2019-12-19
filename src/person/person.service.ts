@@ -5,7 +5,7 @@ import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { from, Observable, of, zip } from 'rxjs';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { first, flatMap, map } from 'rxjs/operators';
+import { flatMap, map } from 'rxjs/operators';
 import { SearchParams } from '../exceptions/search.params';
 import { prepareSearchParams, removeEmptyFields } from '../utils/utils';
 import { CreateResult } from './models/create-result.model';
@@ -29,9 +29,9 @@ export class PersonService {
     };
     return from(this.search(searchParams))
       .pipe(
-        flatMap((res: Person) => {
-          if (res) {
-            return zip(of(res), of(true));
+        flatMap((res: Person[]) => {
+          if (res && res.length > 0) {
+            return zip(of(res[0]), of(true));
           }
           return zip(from(this.personRepository.save(options)), of(false));
         }),
@@ -58,7 +58,6 @@ export class PersonService {
     return from(this.personRepository.query(
       `SELECT * FROM person WHERE firstName LIKE "%${query}%" OR lastName LIKE "%${query}%" OR middleName LIKE "%${query}%" OR email LIKE "%${query}%"`))
       .pipe(
-        first(),
         map(res => {
           if (res && res.length === 0) {
             throw new NotFoundException(`No persons found by query: ${query}`);
@@ -68,8 +67,8 @@ export class PersonService {
       );
   }
 
-  search(params: SearchParams): Observable<Person> {
+  search(params: SearchParams): Observable<Person[]> {
     const rawParams: Partial<SearchParams> = prepareSearchParams(removeEmptyFields(params));
-    return from(this.personRepository.findOne(rawParams));
+    return from(this.personRepository.find(rawParams));
   }
 }
