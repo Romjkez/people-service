@@ -47,7 +47,7 @@ Response model `CreateResult`:
 ```js
 {
     data: Person, // Person object
-    wasFound: boolean // если true - person is already existing and was found in database; false - created and saved
+    wasFound: boolean // if true - person is already existing and was found in database; false - created and saved
 }
 ```
 Example:
