@@ -15,6 +15,7 @@ Service for saving and getting people data. Developed with NestJS
   - `email` - search by email
 
 \* `query` is priotirized param, if `query` and  `firstName`, `lastName`, `middleName`, `email` provided, only `query` will be applied
+
 \** - search by fields: `firstName`/`lastName`/`middleName`/`email` can be combined;
 
 - Response format: JSON array with people OR [error](#Errors)
