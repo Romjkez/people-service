@@ -1,4 +1,6 @@
 # Сервис "Люди"
+*ENGLISH VERSION OF DOC*: https://github.com/Romjkez/people-service/blob/master/README-en.md
+
 Разработан с помощью Nest JS
 ## Получение списка людей
 - Метод: GET
